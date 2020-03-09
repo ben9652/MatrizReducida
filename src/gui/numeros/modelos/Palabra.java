@@ -175,7 +175,7 @@ public final class Palabra implements IPalabra {
             paux.insertarCaracterComienzo(aux);
         for(Caracter aux1=poriginal.primero,aux2=paux.primero;aux1!=null;aux1=aux1.getSiguiente(),aux2=aux2.getSiguiente()){
             if(!Objects.equals(aux1.getCaracter(), aux2.getCaracter())){
-                System.out.println("No es palindromo");
+                System.out.println("No es palíndromo");
                 return;
             }
         }
@@ -274,11 +274,15 @@ public final class Palabra implements IPalabra {
             if(masOMenos_en_anterior){
                 for(Caracter provisorio = indice ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente(), i++){
                     if(i_o_numero(indice.getSiguiente())){
-                        indice = provisorio;
-                        i = p;
-                        break;
+                        if(!FILA.frente().equals(new Caracter('/')) || !mas_o_menos(FILA.frente().getSiguiente())){
+                            indice = provisorio;
+                            i = p;
+                            break;
+                        }
                     }
                 }
+                if(!indice.equals(new Caracter(' ')))
+                    FILA.vaciar();
             }
             if(i_o_numero_en_anterior){
                 for(Caracter provisorio = indice ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente(), i++){
@@ -311,5 +315,9 @@ public final class Palabra implements IPalabra {
     
     private static boolean i_o_numero(Caracter car){
         return car.equals(new Caracter('i')) || car.isdigit();
+    }
+    
+    public boolean esComplejo(){
+        
     }
 }

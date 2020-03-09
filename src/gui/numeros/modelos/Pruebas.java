@@ -11,7 +11,7 @@ package gui.numeros.modelos;
  */
 public class Pruebas {
     public static void main(String[] args) {
-        Palabra palabra = new Palabra("+ 6 /  - 9i  -    7");
+        Palabra palabra = new Palabra("+ 6 /  - 9i  -    8  /  +     7");
         Palabra nueva = palabra.desespaciado_numerosComplejos();
 //        String cadena = "Hola";
 //        char[] c = cadena.toCharArray();

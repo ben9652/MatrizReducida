@@ -5,7 +5,7 @@
  */
 package gui.controladores.modelos;
 
-import gui.numeros.modelos.Numero;
+import gui.numeros.modelos.Caracter;
 
 /**
  *
@@ -13,6 +13,6 @@ import gui.numeros.modelos.Numero;
  */
 public class Principal {
     public static void main(String[] args) {
-        System.out.println(Numero.atoi("-6809719"));
+        System.out.println(Caracter.atoi("-6809719"));
     }
 }
