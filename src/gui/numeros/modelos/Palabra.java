@@ -6,13 +6,14 @@
 package gui.numeros.modelos;
 
 import gui.interfaces.IPalabra;
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
  *
  * @author ASUS
  */
-public final class Palabra implements IPalabra {
+public final class Palabra implements IPalabra, Iterable<Caracter> {
     private Caracter primero;
     private Caracter ultimo;
     private int cantidad;
@@ -28,6 +29,30 @@ public final class Palabra implements IPalabra {
     
     public Palabra(){
         this.palabra = null;
+    }
+    
+    @Override
+    public Iterator<Caracter> iterator() {
+        return new Iterator<Caracter>() {
+            private int i = 0;
+            
+            @Override
+            public boolean hasNext() {
+                return i < length();
+            }
+
+            @Override
+            public Caracter next() {
+                i++;
+                return getCar(i-1);
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+            
+        };
     }
     
     @Override
@@ -317,7 +342,74 @@ public final class Palabra implements IPalabra {
         return car.equals(new Caracter('i')) || car.isdigit();
     }
     
-    public boolean esComplejo(){
+//    public boolean esComplejo(){
+//        
+//    }
+    
+    /**
+     * Analiza si un término está escrito en el formato de número complejo.
+     * @return 
+     */
+    public boolean analisisTermino(){
+        Caracter indice_slash = new Caracter(null);
+        int numero_slashes = 0;
+        int numero_ies = 0;
         
+        for(Caracter c : this){
+            if(c.equals('/')){
+                numero_slashes++;
+                indice_slash = c;
+            }
+            if(c.equals('i'))
+                numero_ies++;
+        }
+        
+        if(numero_slashes>1 || numero_ies>1) return false;
+        
+        if(numero_slashes == 1){
+            
+            //Se analiza detrás del slash
+            for(Caracter puntero_paTras = indice_slash ; puntero_paTras.getCaracter() != null ; puntero_paTras = puntero_paTras.getAnterior()){
+                if(!puntero_paTras.isdigit()){
+                    //Se filtra el caracter '/', y se hace un control de paso
+                    if(puntero_paTras.equals('/')){
+                        if(puntero_paTras.getSiguiente().getCaracter() == null) return false;
+                        continue;
+                    }
+                    
+                    //Si el caracter que no es un dígito, NO es una 'i', se retornará falso.
+                    if(!puntero_paTras.equals('i')) return false;
+                    
+                    //Si detrás de la 'i' hay algún caracter, o si adelante de la 'i' no hay un número, se retornará falso.
+                    if(puntero_paTras.getAnterior().getCaracter() != null || !puntero_paTras.getSiguiente().isdigit()) return false;
+                }
+            }
+            
+            //Se analiza adelante del slash
+            for(Caracter puntero_paLante = indice_slash ; puntero_paLante.getCaracter() != null ; puntero_paLante = puntero_paLante.getSiguiente()){
+                if(!puntero_paLante.isdigit()){
+                    //Se filtra el caracter '/', y se hace un control de paso
+                    if(puntero_paLante.equals('/')){
+                        if(puntero_paLante.getAnterior().getCaracter() == null) return false;
+                        continue;
+                    }
+                    
+                    //Si el caracter que no es un dígito, NO es una 'i', se retornará falso.
+                    if(!puntero_paLante.equals('i')) return false;
+                    
+                    //Si delante de la 'i' hay algún caracter, o si detrás de la 'i' no hay un número, se retornará falso.
+                    if(puntero_paLante.getSiguiente().getCaracter() != null || !puntero_paLante.getAnterior().isdigit()) return false;
+                }
+            }
+        }
+        else{
+            for(Caracter c : this){
+                if(!c.isdigit()){
+                    if(!c.equals('i')) return false;
+                    if(!c.equals(this.primero) && !c.equals(this.ultimo)) return false;
+                }
+            }
+        }
+        return true;
     }
 }

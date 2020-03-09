@@ -135,10 +135,16 @@ public class Caracter {
             return false;
         }
         if (getClass() != obj.getClass()) {
-            return false;
+            if(obj.getClass().getSimpleName().equals("Character")){
+                final Character other = (Character) obj;
+                return Objects.equals(this.caracter, other);
+            }
+            else return false;
         }
-        final Caracter other = (Caracter) obj;
-        return Objects.equals(this.caracter, other.caracter);
+        else{
+            final Caracter other = (Caracter) obj;
+            return Objects.equals(this.caracter, other.caracter);
+        }
     }
     
     @Override
