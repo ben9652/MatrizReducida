@@ -25,10 +25,13 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
     private static final Fila FILA = new Fila();
 
     public Palabra(String palabra) {
-        char[] word = palabra.toCharArray();
-        for(char p : word)
-            this.insertarCaracterFinal(new Caracter(p));
-        this.palabra = palabra;
+        if(palabra != null) {
+            char[] word = palabra.toCharArray();
+            for(char p : word)
+                this.insertarCaracterFinal(new Caracter(p));
+            this.palabra = palabra;
+        }
+        else this.palabra = null;
     }
     
     public Palabra(){
@@ -232,13 +235,13 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return nueva;
     }
     
-    public boolean esComplejo(){
+    public String esComplejo(){
         Palabra desespaciada = this.desespaciado_numerosComplejos();
         
         //Si hay un espacio en la cadena, se devuelve falso.
         //Esto es para facilitar el formateo de la cadena (más información en el JavaDoc de desespaciado_numerosComplejos()).
         for(Caracter c : desespaciada){
-            if(c.equals(' ')) return false;
+            if(c.equals(' ')) return ERROR_ESPACIOS;
         }
         
         //Se declara el patrón que queremos revisar
@@ -246,14 +249,16 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         //m es de tipo Matcher. Clase que nos servirá para detectar si una cadena contiene cierto patrón.
         Matcher m = patron.matcher(desespaciada.getPalabra());
         //Si la expresión desespaciada contiene '+' y '-' seguidos, se devuelve falso.
-        if(m.find()) return false;
+        if(m.find()) return ERROR_SIGNOS_SEGUIDOS;
         
         Palabra[] terminos = desespaciada.separarPorSignos();
         
-        for(Palabra p : terminos)
-            if(!p.analisisTermino()) return false;
+        for(Palabra p : terminos){
+            String estado = p.analisisTermino();
+            if(!estado.equals(EXITO_TERMINO)) return estado;
+        }
         
-        return true;
+        return EXITO_COMPLEJO;
     }
     
     /**
@@ -414,7 +419,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
      * 
      * @return 
      */
-    private boolean analisisTermino(){
+    private String analisisTermino(){
         Caracter indice_slash = new Caracter(null);
         int numero_slashes = 0;
         int numero_ies = 0;
@@ -434,7 +439,8 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 cantidad_signo_menos++;
         }
         
-        if(numero_slashes>1 || numero_ies>1 || cantidad_signo_mas>1 || cantidad_signo_menos>1) return false;
+        String estado = control_cantidad_de_caracteres(numero_slashes, numero_ies, cantidad_signo_mas, cantidad_signo_menos);
+        if(!estado.equals(EXITO_CARACTERES_DE_MAS)) return estado;
         
         if(numero_slashes == 1){
             
@@ -443,15 +449,17 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 if(!puntero_paTras.isdigit()){
                     //Se filtra el caracter '/', y se hace un control de paso
                     if(puntero_paTras.equals('/')){
-                        if(puntero_paTras.getSiguiente().getCaracter() == null) return false;
+                        if(puntero_paTras.getSiguiente().getCaracter() == null) return ERROR_MITAD_DERECHA_SIN_NUMERO;
                         continue;
                     }
                     
+                    if(mas_o_menos(puntero_paTras)) return ERROR_SIGNO_MAL_PUESTO;
+                    
                     //Si el caracter que no es un dígito, NO es una 'i', se retornará falso.
-                    if(!puntero_paTras.equals('i')) return false;
+                    if(!puntero_paTras.equals('i')) return ERROR_CARACTER_INVALIDO;
                     
                     //Si detrás de la 'i' hay algún caracter, o si adelante de la 'i' no hay un número, se retornará falso.
-                    if(puntero_paTras.getAnterior().getCaracter() != null || !puntero_paTras.getSiguiente().isdigit()) return false;
+                    if(puntero_paTras.getAnterior().getCaracter() != null || !puntero_paTras.getSiguiente().isdigit()) return ERROR_MALA_POSICION_DE_I;
                 }
             }
             
@@ -460,33 +468,33 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 if(!puntero_paLante.isdigit()){
                     //Se filtra el caracter '/', y se hace un control de paso
                     if(puntero_paLante.equals('/')){
-                        if(puntero_paLante.getAnterior().getCaracter() == null) return false;
+                        if(puntero_paLante.getAnterior().getCaracter() == null) return ERROR_MITAD_IZQUIERDA_SIN_NUMERO;
                         continue;
                     }
                     
                     //Si me topo con un signo '+' o '-', estrictamente debe haber un '/' atrás, y un número delante.
                     if(mas_o_menos(puntero_paLante)){
                         if(puntero_paLante.getAnterior().equals('/') && puntero_paLante.getSiguiente().isdigit()) continue;
-                        else return false;
+                        else return ERROR_SIGNO_MAL_PUESTO;
                     }
                     
                     //Si el caracter que no es un dígito, NO es una 'i', se retornará falso.
-                    if(!puntero_paLante.equals('i')) return false;
+                    if(!puntero_paLante.equals('i')) return ERROR_CARACTER_INVALIDO;
                     
                     //Si delante de la 'i' hay algún caracter, o si detrás de la 'i' no hay un número, se retornará falso.
-                    if(puntero_paLante.getSiguiente().getCaracter() != null || !puntero_paLante.getAnterior().isdigit()) return false;
+                    if(puntero_paLante.getSiguiente().getCaracter() != null || !puntero_paLante.getAnterior().isdigit()) return ERROR_MALA_POSICION_DE_I;
                 }
             }
         }
         else{
             for(Caracter c : this){
                 if(!c.isdigit()){
-                    if(!c.equals('i')) return false;
-                    if(!c.equals(this.primero) && !c.equals(this.ultimo)) return false;
+                    if(!c.equals('i')) return ERROR_CARACTER_INVALIDO;
+                    if(!c.equals(this.primero) && !c.equals(this.ultimo)) return ERROR_MALA_POSICION_DE_I;
                 }
             }
         }
-        return true;
+        return EXITO_TERMINO;
     }
     
     private String control_cantidad_de_caracteres(int slashes, int ies, int mases, int menoses){

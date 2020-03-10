@@ -5,6 +5,7 @@
  */
 package gui.numeros.modelos;
 
+import static gui.interfaces.IPalabra.EXITO_COMPLEJO;
 import java.util.Scanner;
 
 /**
@@ -18,15 +19,12 @@ public class Pruebas {
         
         while(true){
             System.out.print("Escriba un número complejo ('exit' para salir): ");
-            expresion = scanner.next();
+            expresion = scanner.nextLine();
             
             if(expresion.equals("exit")) break;
             
             Palabra palabra = new Palabra(expresion);
-            if(palabra.esComplejo())
-                System.out.println("Es un número complejo.");
-            else
-                System.out.println("No es un complejo.");
+            System.out.println(palabra.esComplejo());
         }
     }
     
@@ -37,12 +35,14 @@ public class Pruebas {
         return c;
     }
     
+    
     public static Character[] toCharacterArray(char c[]){
         Character[] nuevacadena = new Character[c.length];
         for(int i = 0;i<nuevacadena.length;i++)
             nuevacadena[i] = c[i];
         return nuevacadena;
     }
+
     
     public static String getCharacterString(Character[] cad){
         String cadena = cad[0].toString();
