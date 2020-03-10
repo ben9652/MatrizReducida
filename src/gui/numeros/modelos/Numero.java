@@ -5,6 +5,8 @@
  */
 package gui.numeros.modelos;
 
+import gui.cadenas.modelos.Caracter;
+import gui.cadenas.modelos.Palabra;
 import java.util.ArrayList;
 import java.util.List;
 

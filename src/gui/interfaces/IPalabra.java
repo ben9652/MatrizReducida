@@ -5,8 +5,8 @@
  */
 package gui.interfaces;
 
-import gui.numeros.modelos.Caracter;
-import gui.numeros.modelos.Palabra;
+import gui.cadenas.modelos.Caracter;
+import gui.cadenas.modelos.Palabra;
 
 /**
  *

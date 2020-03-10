@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui.numeros.modelos;
+package gui.cadenas.modelos;
 
+import gui.numeros.modelos.Numero;
 import java.util.Objects;
 
 /**

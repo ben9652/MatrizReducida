@@ -5,7 +5,7 @@
  */
 package gui.numeros.modelos;
 
-import static gui.interfaces.IPalabra.EXITO_COMPLEJO;
+import gui.cadenas.modelos.Palabra;
 import java.util.Scanner;
 
 /**
