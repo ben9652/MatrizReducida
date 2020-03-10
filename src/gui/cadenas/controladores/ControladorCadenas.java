@@ -39,11 +39,9 @@ public class ControladorCadenas implements IControladorCadenas {
         String resultado = expresion.esComplejo();
         
         if(!resultado.equals(EXITO_COMPLEJO))
-            JOptionPane.showMessageDialog(null, resultado, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Número: " + expresion + "\n" + resultado, "Error", JOptionPane.ERROR_MESSAGE);
         else
-            JOptionPane.showMessageDialog(null, "          " + resultado, "Éxito", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(VentanaCadenas.class.getResource("check.png")));
-        
-        this.ventana.setText("");
+            JOptionPane.showMessageDialog(null, "Número: " + expresion + "\n" + resultado, "Éxito", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(VentanaCadenas.class.getResource("check.png")));
     }
 
     @Override
