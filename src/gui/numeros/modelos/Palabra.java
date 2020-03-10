@@ -6,8 +6,12 @@
 package gui.numeros.modelos;
 
 import gui.interfaces.IPalabra;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -158,7 +162,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 case 0:
                     this.primero = this.primero.getSiguiente();
                     this.palabra = this.palabra.substring(1);
-                    return;
+                    break;
                     
                 default:
                     if(posicion == this.cantidad-1){
@@ -228,6 +232,30 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return nueva;
     }
     
+    public boolean esComplejo(){
+        Palabra desespaciada = this.desespaciado_numerosComplejos();
+        
+        //Si hay un espacio en la cadena, se devuelve falso.
+        //Esto es para facilitar el formateo de la cadena (más información en el JavaDoc de desespaciado_numerosComplejos()).
+        for(Caracter c : desespaciada){
+            if(c.equals(' ')) return false;
+        }
+        
+        //Se declara el patrón que queremos revisar
+        Pattern patron = Pattern.compile("[+-][+-]");
+        //m es de tipo Matcher. Clase que nos servirá para detectar si una cadena contiene cierto patrón.
+        Matcher m = patron.matcher(desespaciada.getPalabra());
+        //Si la expresión desespaciada contiene '+' y '-' seguidos, se devuelve falso.
+        if(m.find()) return false;
+        
+        Palabra[] terminos = desespaciada.separarPorSignos();
+        
+        for(Palabra p : terminos)
+            if(!p.analisisTermino()) return false;
+        
+        return true;
+    }
+    
     /**
      * Este método elimina los espacios que hay entre signos '+' y '-', y números o 'ies'.
      * 
@@ -238,29 +266,43 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
      *
      * @return
      */
-    @Override
-    public Palabra desespaciado_numerosComplejos() {
+    private Palabra desespaciado_numerosComplejos() {
         Palabra palabraDesespaciada = new Palabra(this.palabra);
         int wordLength = palabraDesespaciada.length();
         Caracter indice = palabraDesespaciada.primero;
         Caracter[] arreglo;
         
+        //Eliminación de los espacios antes y después de la cadena
+        for(int i = 0 ; indice.equals(' ') ; indice = indice.getSiguiente()){
+            palabraDesespaciada.borrarCaracter(i);
+            wordLength--;
+        }
+        indice = palabraDesespaciada.ultimo;
+        for(int i = palabraDesespaciada.length()-1 ; indice.equals(' ') ; i--, indice = indice.getAnterior()){
+            palabraDesespaciada.borrarCaracter(i);
+            wordLength--;
+        }
+        
+        indice = palabraDesespaciada.primero;
+        
         for(int i = 0 ; i<wordLength ; i++, indice = indice.getSiguiente()) {
-            if(indice.equals(new Caracter(' '))){
+            if(indice.equals(' ')){
                 arreglo = analisisEntreEspacios(indice, i);
                 
                 indice = arreglo[0];
                 i = arreglo[1].atoi();
                 
-                for( ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente()){
+                for( ; indice.equals(' ') ; indice = indice.getSiguiente()){
                     palabraDesespaciada.borrarCaracter(i);
                     wordLength--;
                 }
             }
             
-            if(!FILA.esFilaVacia() && !indice.equals(new Caracter(' '))) FILA.enfila(new Caracter(indice.getCaracter()));
+            if(!FILA.esFilaVacia() && !indice.equals(' ')) FILA.enfila(new Caracter(indice.getCaracter()));
             
-            if(indice.equals(new Caracter('/'))) FILA.enfila(new Caracter(indice.getCaracter()));
+            if(indice.equals('/')) FILA.enfila(new Caracter(indice.getCaracter()));
+            
+            if(indice.isdigit()) FILA.vaciar();
         }
         return palabraDesespaciada;
     }
@@ -297,20 +339,18 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         if(masOMenos_en_anterior || i_o_numero_en_anterior){
             
             if(masOMenos_en_anterior){
-                for(Caracter provisorio = indice ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente(), i++){
+                for(Caracter provisorio = indice ; indice.equals(' ') ; indice = indice.getSiguiente(), i++){
                     if(i_o_numero(indice.getSiguiente())){
-                        if(!FILA.frente().equals(new Caracter('/')) || !mas_o_menos(FILA.frente().getSiguiente())){
+                        if(!FILA.frente().equals('/') || !mas_o_menos(FILA.frente().getSiguiente())){
                             indice = provisorio;
                             i = p;
                             break;
                         }
                     }
                 }
-                if(!indice.equals(new Caracter(' ')))
-                    FILA.vaciar();
             }
             if(i_o_numero_en_anterior){
-                for(Caracter provisorio = indice ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente(), i++){
+                for(Caracter provisorio = indice ; indice.equals(' ') ; indice = indice.getSiguiente(), i++){
                     if(mas_o_menos(indice.getSiguiente())){
                         indice = provisorio;
                         i = p;
@@ -320,7 +360,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             }
         }
         else
-            for( ; indice.equals(new Caracter(' ')) ; indice = indice.getSiguiente(), i++);
+            for( ; indice.equals(' ') ; indice = indice.getSiguiente(), i++);
         
         arreglo[0] = indice;
         String numero_indice = Integer.toString(i);
@@ -334,26 +374,52 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return arreglo;
     }
     
-    private static boolean mas_o_menos(Caracter car){
-        return car.equals(new Caracter('+')) || car.equals(new Caracter('-'));
+    private Palabra[] separarPorSignos(){
+        List<Palabra> listaTerminos = new ArrayList<>();
+        Palabra terminoCandidato = new Palabra();
+        for(Caracter c : this){
+            if(mas_o_menos(c)){
+                if(!c.equals(this.primero)){
+                    if(!c.getAnterior().equals('/')){
+                        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
+                        terminoCandidato.vaciar();
+                    }
+                }
+                continue;
+            }
+            terminoCandidato.insertarCaracterFinal(c);
+        }
+        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
+        Palabra[] terminos = new Palabra[listaTerminos.size()];
+        int i = 0;
+        for(Palabra p : listaTerminos){
+            terminos[i] = p;
+            i++;
+        }
+        return terminos;
     }
-    
-    private static boolean i_o_numero(Caracter car){
-        return car.equals(new Caracter('i')) || car.isdigit();
-    }
-    
-//    public boolean esComplejo(){
-//        
-//    }
     
     /**
-     * Analiza si un término está escrito en el formato de número complejo.
+     * <pre>Valida un término individual. Este puede ser real o complejo.
+     * 
+     * La técnica es la siguiente:
+     * 
+     * 1) Recorrer toda la cadena y contar la cantidad de '/', 'i', '+', y '-' que hay.
+     * 2) En el caso de haber más de 1 de cada uno de los dos caracteres, se retorna falso.
+     * 3) Si hay un '/', se procede a analizar, por detrás, y por delante del slash qué hay:
+     *      i) por detrás: solo debe haber números (o una 'i') y una 'i' opcional al final del recorrido hacia atrás.
+     *      ii) por delante: puede haber un signo '+' o '-' exactamente delante de '/', pero no en otro lugar
+     * y se cumple lo mismo que en i), excepto que la 'i' solo puede estar al final.
+     * 4) Si no hay un '/', se verifica que solo sean números, y, en caso de haber una i, que solo esté en el principio, o en el final de la cadena.</pre>
+     * 
      * @return 
      */
-    public boolean analisisTermino(){
+    private boolean analisisTermino(){
         Caracter indice_slash = new Caracter(null);
         int numero_slashes = 0;
         int numero_ies = 0;
+        int cantidad_signo_mas = 0;
+        int cantidad_signo_menos = 0;
         
         for(Caracter c : this){
             if(c.equals('/')){
@@ -362,9 +428,13 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             }
             if(c.equals('i'))
                 numero_ies++;
+            if(c.equals('+'))
+                cantidad_signo_mas++;
+            if(c.equals('-'))
+                cantidad_signo_menos++;
         }
         
-        if(numero_slashes>1 || numero_ies>1) return false;
+        if(numero_slashes>1 || numero_ies>1 || cantidad_signo_mas>1 || cantidad_signo_menos>1) return false;
         
         if(numero_slashes == 1){
             
@@ -394,6 +464,12 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                         continue;
                     }
                     
+                    //Si me topo con un signo '+' o '-', estrictamente debe haber un '/' atrás, y un número delante.
+                    if(mas_o_menos(puntero_paLante)){
+                        if(puntero_paLante.getAnterior().equals('/') && puntero_paLante.getSiguiente().isdigit()) continue;
+                        else return false;
+                    }
+                    
                     //Si el caracter que no es un dígito, NO es una 'i', se retornará falso.
                     if(!puntero_paLante.equals('i')) return false;
                     
@@ -411,5 +487,46 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             }
         }
         return true;
+    }
+    
+    private String control_cantidad_de_caracteres(int slashes, int ies, int mases, int menoses){
+        final String frase_inicial_singular = "No puede haber más de ";
+        final String frase_inicial_plural = "No pueden haber: más de ";
+        final String frase_final = " en un término.";
+        final String y = "y ";
+        final String coma = ", ";
+        
+        final String slash = "un '/'";
+        final String i = "una 'i'";
+        final String mas = "un '+'";
+        final String menos = "un '-'";
+        
+        if(slashes>1 || ies>1 || mases>1 || menoses>1){
+            if(!(slashes>1) && !(ies>1) && !(mases>1) && (menoses>1))   return frase_inicial_singular + menos + frase_final;
+            if(!(slashes>1) && !(ies>1) && (mases>1) && !(menoses>1))   return frase_inicial_singular + mas + frase_final;
+            if(!(slashes>1) && !(ies>1) && (mases>1) && (menoses>1))    return frase_inicial_plural + mas + coma + y + frase_final;
+            if(!(slashes>1) && (ies>1) && !(mases>1) && !(menoses>1))   return frase_inicial_singular + i + frase_final;
+            if(!(slashes>1) && (ies>1) && !(mases>1) && (menoses>1))    return frase_inicial_plural + menos + coma + y + i + frase_final;
+            if(!(slashes>1) && (ies>1) && (mases>1) && !(menoses>1))    return frase_inicial_plural + mas + coma + y + i + frase_final;
+            if(!(slashes>1) && (ies>1) && (mases>1) && (menoses>1))     return frase_inicial_plural + menos + coma + mas + coma + y + i + frase_final;
+            if((slashes>1) && !(ies>1) && !(mases>1) && !(menoses>1))   return frase_inicial_singular + slash + frase_final;
+            if((slashes>1) && !(ies>1) && !(mases>1) && (menoses>1))    return frase_inicial_plural + menos + coma + y + slash + frase_final;
+            if((slashes>1) && !(ies>1) && (mases>1) && !(menoses>1))    return frase_inicial_plural + mas + coma + y + slash + frase_final;
+            if((slashes>1) && !(ies>1) && (mases>1) && (menoses>1))     return frase_inicial_plural + menos + coma + mas + coma + y + slash + frase_final;
+            if((slashes>1) && (ies>1) && !(mases>1) && !(menoses>1))    return frase_inicial_plural + slash + coma + y + i + frase_final;
+            if((slashes>1) && (ies>1) && !(mases>1) && (menoses>1))     return frase_inicial_plural + menos + coma + i + coma + y + slash + frase_final;
+            if((slashes>1) && (ies>1) && (mases>1) && !(menoses>1))     return frase_inicial_plural + mas + coma + slash + coma + y + i + frase_final;
+            if((slashes>1) && (ies>1) && (mases>1) && (menoses>1))      return frase_inicial_plural + menos + coma + mas + coma + slash + coma + y + i + frase_final;
+        }
+        
+        return EXITO_CARACTERES_DE_MAS;
+    }
+    
+    private static boolean mas_o_menos(Caracter car){
+        return car.equals('+') || car.equals('-');
+    }
+    
+    private static boolean i_o_numero(Caracter car){
+        return car.equals('i') || car.isdigit();
     }
 }

@@ -13,6 +13,16 @@ import gui.numeros.modelos.Palabra;
  * @author Benjamin
  */
 public interface IPalabra {
+    
+    String EXITO_CARACTERES_DE_MAS = "Caracteres justos.";
+    
+    String ERROR_SLASH = "No puede haber más de un '/' en un término.";
+    String ERROR_IES = "No puede haber más de una 'i' en un término.";
+    String ERROR_MAS = "No puede haber más de un '+' en un término.";
+    String ERROR_MENOS = "No puede haber más de un '-' en un término.";
+    String ERROR_SLASH_IES = "No pueden haber más de un slash y una 'i' en un término.";
+    String ERROR_SLASH_MAS = "No pueden haber más de un slash y un '+' en un término.";
+    String ERROR_SLASH_MENOS = "No pueden haber más de un slash y un '-' en un término.";
 
     public String getPalabra();
 
@@ -41,6 +51,4 @@ public interface IPalabra {
     public void invertir(Palabra palabra);
 
     public Palabra concat(Palabra a);
-
-    public Palabra desespaciado_numerosComplejos();
 }

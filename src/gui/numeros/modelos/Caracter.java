@@ -15,6 +15,7 @@ public class Caracter {
     private Character caracter;
     private Caracter siguiente;
     private Caracter anterior;
+    private Integer indice;
 
     public Caracter(Character caracter) {
         this.caracter = caracter;
@@ -24,6 +25,14 @@ public class Caracter {
     
     public Caracter() {
         this.caracter = null;
+    }
+    
+    public void setIndice(Integer indice){
+        this.indice = indice;
+    }
+    
+    public Integer getIndice(){
+        return this.indice;
     }
     
     /**
@@ -122,7 +131,7 @@ public class Caracter {
         hash = 89 * hash + Objects.hashCode(this.caracter);
         return hash;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -143,8 +152,14 @@ public class Caracter {
         }
         else{
             final Caracter other = (Caracter) obj;
-            return Objects.equals(this.caracter, other.caracter);
+            if (!Objects.equals(this.caracter, other.caracter))
+                return false;
+            if (!Objects.equals(this.siguiente, other.siguiente))
+                return false;
+            if (!Objects.equals(this.anterior, other.anterior))
+                return false;
         }
+        return true;
     }
     
     @Override

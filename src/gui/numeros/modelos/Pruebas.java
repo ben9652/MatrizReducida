@@ -5,18 +5,29 @@
  */
 package gui.numeros.modelos;
 
+import java.util.Scanner;
+
 /**
  *
  * @author Benjamin
  */
 public class Pruebas {
     public static void main(String[] args) {
-        Palabra termino = new Palabra("6/78");
-        System.out.println(termino.analisisTermino());
-//        String cadena = "Hola";
-//        char[] c = cadena.toCharArray();
-//        Character[] arreglo = toCharacterArray(c);
-//        System.out.println(getCharacterString(arreglo));
+        Scanner scanner = new Scanner(System.in);
+        String expresion;
+        
+        while(true){
+            System.out.print("Escriba un número complejo ('exit' para salir): ");
+            expresion = scanner.next();
+            
+            if(expresion.equals("exit")) break;
+            
+            Palabra palabra = new Palabra(expresion);
+            if(palabra.esComplejo())
+                System.out.println("Es un número complejo.");
+            else
+                System.out.println("No es un complejo.");
+        }
     }
     
     public static int strlen(Character[] cad){
