@@ -242,6 +242,8 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
     }
     
     public String esComplejo(){
+        if(this.getPalabra().isEmpty()) return ERROR_SIN_EXPRESION;
+        
         Palabra desespaciada = this.desespaciado_numerosComplejos();
         
         int cuenta_signos = 0;
@@ -397,9 +399,10 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                     if(!c.getAnterior().equals('/')){
                         listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
                         terminoCandidato.vaciar();
+                        continue;
                     }
                 }
-                continue;
+                else continue;
             }
             terminoCandidato.insertarCaracterFinal(c);
         }
@@ -430,6 +433,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
      */
     private String analisisTermino(){
         Caracter indice_slash = new Caracter(null);
+        int cantidad_numeros = 0;
         int numero_slashes = 0;
         int numero_ies = 0;
         int cantidad_signo_mas = 0;
@@ -456,6 +460,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             //Se analiza detrás del slash
             for(Caracter puntero_paTras = indice_slash ; puntero_paTras.getCaracter() != null ; puntero_paTras = puntero_paTras.getAnterior()){
                 if(!puntero_paTras.isdigit()){
+                    
                     //Se filtra el caracter '/', y se hace un control de paso
                     if(puntero_paTras.equals('/')){
                         if(puntero_paTras.getSiguiente().getCaracter() == null) return ERROR_MITAD_DERECHA_SIN_NUMERO;
@@ -475,6 +480,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             //Se analiza adelante del slash
             for(Caracter puntero_paLante = indice_slash ; puntero_paLante.getCaracter() != null ; puntero_paLante = puntero_paLante.getSiguiente()){
                 if(!puntero_paLante.isdigit()){
+                    
                     //Se filtra el caracter '/', y se hace un control de paso
                     if(puntero_paLante.equals('/')){
                         if(puntero_paLante.getAnterior().getCaracter() == null) return ERROR_MITAD_IZQUIERDA_SIN_NUMERO;
@@ -493,7 +499,10 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                     //Si delante de la 'i' hay algún caracter, o si detrás de la 'i' no hay un número, se retornará falso.
                     if(puntero_paLante.getSiguiente().getCaracter() != null || !puntero_paLante.getAnterior().isdigit()) return ERROR_MALA_POSICION_DE_I;
                 }
+                else
+                    cantidad_numeros++;
             }
+            if(cantidad_numeros == 1 && indice_slash.getSiguiente().equals('0')) return ERROR_DENOMINADOR_CERO;
         }
         else{
             for(Caracter c : this){

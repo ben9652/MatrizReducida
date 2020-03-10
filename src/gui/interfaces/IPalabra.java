@@ -16,16 +16,18 @@ public interface IPalabra {
     Character UNIDAD_IMAGINARIA = 'i';
     
     String EXITO_COMPLEJO = "Es un número válido.";
+    String ERROR_SIN_EXPRESION = "No hay una expresión que analizar.";
     String ERROR_ESPACIOS = "No pueden existir espacios en un término. Solo entre términos.";
     String ERROR_SIGNOS_SEGUIDOS = "No puede haber más de un signo algebráico seguido.";
     String ERROR_FALTA_OPERANDO = "Falta un operando luego del signo del final.";
     
     String EXITO_TERMINO = "Termino correcto.";
     String EXITO_CARACTERES_DE_MAS = "Caracteres justos.";
-    String ERROR_MITAD_DERECHA_SIN_NUMERO = "No puede no haber números delante de un '/'.";
-    String ERROR_MITAD_IZQUIERDA_SIN_NUMERO = "No puede no haber números detrás de un '/'.";
-    String ERROR_CARACTER_INVALIDO = "No se permiten caracteres fuera de dígitos numéricos, y de '+', '-', '" + UNIDAD_IMAGINARIA + "', y '/'.";
-    String ERROR_MALA_POSICION_DE_I = "La 'i' no puede posicionarse en medio de números.";
+    String ERROR_MITAD_DERECHA_SIN_NUMERO = "En un nuevo término, no puede NO haber números delante de un '/'.";
+    String ERROR_MITAD_IZQUIERDA_SIN_NUMERO = "En un nuevo término, no puede NO haber números detrás de un '/'.";
+    String ERROR_CARACTER_INVALIDO = "No se permiten caracteres fuera de dígitos numéricos, y de +, -, " + UNIDAD_IMAGINARIA + ", y /.";
+    String ERROR_MALA_POSICION_DE_I = "La '" + UNIDAD_IMAGINARIA + "' no puede posicionarse en medio de números.";
+    String ERROR_DENOMINADOR_CERO = "Un denominador no puede ser 0.";
     String ERROR_SIGNO_MAL_PUESTO = "En medio de un término, solo puede haber un signo estrictamente delante de un slash.";
 
     public String getPalabra();

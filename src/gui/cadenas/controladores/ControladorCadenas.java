@@ -36,6 +36,9 @@ public class ControladorCadenas implements IControladorCadenas {
     
     private void probarCadena(){
         Palabra expresion = new Palabra(this.ventana.getText());
+        
+        if(expresion.getPalabra().isEmpty()) return;
+        
         String resultado = expresion.esComplejo();
         
         if(!resultado.equals(EXITO_COMPLEJO))

@@ -14,6 +14,7 @@ import java.util.Scanner;
  */
 public class Pruebas {
     public static void main(String[] args) {
+        //No se debería validar 7/+8/7i ni 7/+4/+5/+6/+6/+7
         Scanner scanner = new Scanner(System.in);
         String expresion;
         
