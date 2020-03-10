@@ -8,9 +8,12 @@ package gui.cadenas.controladores;
 import gui.cadenas.modelos.Palabra;
 import gui.cadenas.vistas.VentanaCadenas;
 import gui.interfaces.IControladorCadenas;
+import static gui.interfaces.IPalabra.EXITO_COMPLEJO;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -28,17 +31,44 @@ public class ControladorCadenas implements IControladorCadenas {
 
     @Override
     public void btnAceptar(ActionEvent evt) {
+        this.probarCadena();
+    }
+    
+    private void probarCadena(){
         Palabra expresion = new Palabra(this.ventana.getText());
+        String resultado = expresion.esComplejo();
         
+        if(!resultado.equals(EXITO_COMPLEJO))
+            JOptionPane.showMessageDialog(null, resultado, "Error", JOptionPane.ERROR_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(null, "          " + resultado, "Éxito", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(VentanaCadenas.class.getResource("check.png")));
+        
+        this.ventana.setText("");
     }
 
     @Override
     public void btnCancelar(ActionEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.cancelar();
+    }
+    
+    private void cancelar(){
+        this.ventana.dispose();
     }
 
     @Override
     public void txtExpresionPresionarTecla(KeyEvent evt) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        char c = evt.getKeyChar();            
+        if (!Character.isLetter(c)) { //sólo se aceptan letras, Enter, Del, Backspace y espacio
+            switch(c) {
+                case KeyEvent.VK_ENTER: 
+                    this.probarCadena();
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    this.cancelar();
+                    break;
+//                default:
+//                    evt.consume(); //consume el evento para que no sea procesado por la fuente
+            }
+        }
     }
 }

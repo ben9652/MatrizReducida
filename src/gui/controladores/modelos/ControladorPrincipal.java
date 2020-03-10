@@ -12,7 +12,7 @@ import gui.interfaces.IControladorCadenas;
  *
  * @author Benjamin
  */
-public class Principal {
+public class ControladorPrincipal {
     public static void main(String[] args) {
         IControladorCadenas cC = new ControladorCadenas(null);
     }

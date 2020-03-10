@@ -7,7 +7,6 @@ package gui.cadenas.vistas;
 
 import gui.interfaces.IControladorCadenas;
 import javax.swing.JDialog;
-import javax.swing.JTextField;
 
 /**
  *
@@ -25,6 +24,10 @@ public class VentanaCadenas extends javax.swing.JDialog {
         super(ventanaPadre, true);
         initComponents();
         this.controlador = controlador;
+    }
+    
+    public void setText(String s){
+        this.jTextField.setText(s);
     }
     
     public String getText(){
