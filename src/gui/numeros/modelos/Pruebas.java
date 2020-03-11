@@ -14,19 +14,24 @@ import java.util.Scanner;
  */
 public class Pruebas {
     public static void main(String[] args) {
-        //No se debería validar 7/+8/7i ni 7/+4/+5/+6/+6/+7
-        Scanner scanner = new Scanner(System.in);
-        String expresion;
+        Long[] a = {Long.valueOf(213), Long.valueOf(-213)};
+        Long[] b = {Long.valueOf(225), Long.valueOf(3)};
         
-        while(true){
-            System.out.print("Escriba un número complejo ('exit' para salir): ");
-            expresion = scanner.nextLine();
-            
-            if(expresion.equals("exit")) break;
-            
-            Palabra palabra = new Palabra(expresion);
-            System.out.println(palabra.esComplejo());
-        }
+        Long[] resultado = Numero.sdf(a, b);
+        System.out.println("(" + a[0] + "/" + a[1] + ") + (" + b[0] + "/" + b[1] + ") = (" + resultado[0] + "/" + resultado[1] + ")");
+        //No se debería validar 7/+8/7i ni 7/+4/+5/+6/+6/+7
+//        Scanner scanner = new Scanner(System.in);
+//        String expresion;
+//        
+//        while(true){
+//            System.out.print("Escriba un número complejo ('exit' para salir): ");
+//            expresion = scanner.nextLine();
+//            
+//            if(expresion.equals("exit")) break;
+//            
+//            Palabra palabra = new Palabra(expresion);
+//            System.out.println(palabra.esComplejo());
+//        }
     }
     
     public static int strlen(Character[] cad){

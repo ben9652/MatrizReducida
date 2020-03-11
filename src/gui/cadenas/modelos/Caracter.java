@@ -83,6 +83,7 @@ public class Caracter {
     }
     
     public static Integer atoi(String c){
+        if(c == null || c.isEmpty()) return 0;
         int i = 0;
         int numero = 0;
         Palabra expresion = new Palabra(c);
@@ -104,13 +105,7 @@ public class Caracter {
         else return numero*(-1);
     }
     
-    public Integer atoi(){
-        Palabra numero = new Palabra();
-        numero.setPalabraDesdeCaracter(this);
-        return atoi(numero.getPalabra());
-    }
-    
-    public static Integer charToNum(Caracter c){
+    private static Integer charToNum(Caracter c){
         switch(c.getCaracter()){
             case '0': return 0;
             case '1': return 1;

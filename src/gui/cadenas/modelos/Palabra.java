@@ -272,6 +272,32 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return EXITO_COMPLEJO;
     }
     
+    public Palabra[] separarPorSignos(){
+        List<Palabra> listaTerminos = new ArrayList<>();
+        Palabra terminoCandidato = new Palabra();
+        for(Caracter c : this){
+            if(mas_o_menos(c)){
+                if(!c.equals(this.primero)){
+                    if(!c.getAnterior().equals('/')){
+                        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
+                        terminoCandidato.vaciar();
+                        continue;
+                    }
+                }
+                else continue;
+            }
+            terminoCandidato.insertarCaracterFinal(c);
+        }
+        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
+        Palabra[] terminos = new Palabra[listaTerminos.size()];
+        int i = 0;
+        for(Palabra p : listaTerminos){
+            terminos[i] = p;
+            i++;
+        }
+        return terminos;
+    }
+    
     /**
      * Este método elimina los espacios que hay entre signos '+' y '-', y números o 'ies'.
      * 
@@ -306,7 +332,10 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 arreglo = analisisEntreEspacios(indice, i);
                 
                 indice = arreglo[0];
-                i = arreglo[1].atoi();
+                
+                Palabra numero_indice = new Palabra();
+                numero_indice.setPalabraDesdeCaracter(arreglo[1]);
+                i = Caracter.atoi(numero_indice.getPalabra());
                 
                 for( ; indice.equals(' ') ; indice = indice.getSiguiente()){
                     palabraDesespaciada.borrarCaracter(i);
@@ -388,32 +417,6 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         }
         
         return arreglo;
-    }
-    
-    private Palabra[] separarPorSignos(){
-        List<Palabra> listaTerminos = new ArrayList<>();
-        Palabra terminoCandidato = new Palabra();
-        for(Caracter c : this){
-            if(mas_o_menos(c)){
-                if(!c.equals(this.primero)){
-                    if(!c.getAnterior().equals('/')){
-                        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
-                        terminoCandidato.vaciar();
-                        continue;
-                    }
-                }
-                else continue;
-            }
-            terminoCandidato.insertarCaracterFinal(c);
-        }
-        listaTerminos.add(new Palabra(terminoCandidato.getPalabra()));
-        Palabra[] terminos = new Palabra[listaTerminos.size()];
-        int i = 0;
-        for(Palabra p : listaTerminos){
-            terminos[i] = p;
-            i++;
-        }
-        return terminos;
     }
     
     /**

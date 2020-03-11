@@ -5,44 +5,49 @@
  */
 package gui.numeros.modelos;
 
-import gui.cadenas.modelos.Caracter;
 import gui.cadenas.modelos.Palabra;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
  * @author Benjamin
  */
 public class Numero {
-    private String cadena;
-    private int[][] numero = new int[2][2];
+    private Palabra cadena;
+    /*
+        Los números complejos serán representados con un arreglo bidimensional:
+     - el primer índice servirá para acceder a la parte real o compleja (0, para la real; 1, para la compleja)
+     - el segundo índice servirá para acceder al numerador o denominador del número (0, para el numerador; 1, para el denominador)
+    */
+    private Long[][] numero = new Long[2][2];
     private static final List<String> TERMINOS_REALES = new ArrayList<>();
     private static final List<String> TERMINOS_COMPLEJOS = new ArrayList<>();
 
     public Numero(String cadena) {
-        this.cadena = cadena;
+        this.cadena = new Palabra(cadena);
     }
 
-    public String getNumero() {
-        return cadena;
+    public Long[][] getNumero() {
+        return this.numero;
     }
 
-    public void setNumero(String cadena) {
-        this.cadena = cadena;
+    public void setNumero(Long[][] numero) {
+        this.numero = numero;
     }
     
-    /*
-    Primero identificaré las 'i' que haya en la cadena. De ahí, extraeré la parte imaginaria de la cadena
-    */
-    private void strtonum(){
-        final Caracter unidad_imaginaria = new Caracter('i');
-        String cadSinEspacios = this.cadena.trim();
-        Palabra expresion = new Palabra(cadSinEspacios);
-        if(expresion.ocurrencias(unidad_imaginaria) == 1){
-            
-        }
-    }
+//    /*
+//    Primero identificaré las 'i' que haya en la cadena. De ahí, extraeré la parte imaginaria de la cadena
+//    */
+//    public void strtonum(){
+//        final Caracter unidad_imaginaria = new Caracter('i');
+//        String cadSinEspacios = this.cadena.trim();
+//        Palabra expresion = new Palabra(cadSinEspacios);
+//        if(expresion.ocurrencias(unidad_imaginaria) == 1){
+//            
+//        }
+//    }
     
     public static int strlen(Character[] cad){
         int c = 0;
@@ -57,20 +62,90 @@ public class Numero {
         else                return numero * potenciaNumero(numero, potencia-1);
     }
     
-    public static Character[] toCharacterArray(char c[]){
-        Character[] nuevacadena = new Character[c.length];
-        for(int i = 0;i<nuevacadena.length;i++)
-            nuevacadena[i] = c[i];
-        return nuevacadena;
+    public static Long[] sdf(Long n1[],Long n2[]){
+        if(n1 == null || n2 == null){
+            Long[] nulo = {Long.valueOf(0), Long.valueOf(0)};
+            return nulo;
+        }
+        
+        n1 = simplificacion(n1);
+        n2 = simplificacion(n2);
+        
+	Long[] nueva = new Long[2];
+	if(!Objects.equals(n1[1], n2[1])){
+            if(sonDivisibles(n1[1], n2[1]) || sonDivisibles(n2[1], n1[1])){
+                if(sonDivisibles(n1[1], n2[1])){
+                    nueva[0] = n1[0] + n1[1] / n2[1] * n2[0];
+                    nueva[1] = n1[1];
+                }
+                else{
+                    nueva[0] = n2[1] / n1[1] * n1[0] + n2[0];
+                    nueva[1] = n2[1];
+                }
+            }
+            else{
+                nueva[1] = n1[1] * n2[1];
+                nueva[0] = n2[1] * n1[0] + n1[1] * n2[0];
+            }
+	}
+        else{
+            nueva[0] = n1[0] + n2[0];
+            nueva[1] = n1[1];
+        }
+        
+        return simplificacion(nueva);
     }
     
-    public static String getCharacterString(Character[] cad){
-        String cadena = cad[0].toString();
-        String aux;
-        for(int i = 1;i<cad.length;i++){
-            aux = cad[i].toString();
-            cadena = cadena.concat(aux);
+    private static boolean sonDivisibles(Long a, Long b){
+        return a%b == 0;
+    }
+    
+    private static Long[] simplificacion(Long n[]){
+        if(n == null){
+            Long[] nulo = {Long.valueOf(0), Long.valueOf(0)};
+            return nulo;
         }
-        return cadena;
+        
+        if(n[1]<0){
+            n[0] = n[0] * (-1);
+            n[1] = n[1] * (-1);
+        }
+        
+        if(n[1].equals(n[0])){
+            n[0] = Long.valueOf(1);
+            n[1] = Long.valueOf(1);
+            return n;
+        }
+        if(n[1].equals(n[0] * (-1))){
+            n[0] = Long.valueOf(-1);
+            n[1] = Long.valueOf(1);
+            return n;
+        }
+        
+        Long[] positivos = new Long[2];
+        if(n[0]<0) positivos[0] = n[0] * (-1);
+        else positivos[0] = n[0];
+        if(n[1]<0) positivos[1] = n[1] * (-1);
+        else positivos[1] = n[1];
+        
+        Long i;
+        if(positivos[0]<positivos[1]){
+            for(i = positivos[0] ; i!=0 ; i--){
+                if(positivos[0] % i == 0 && positivos[1] % i == 0)
+                    break;
+            }
+            n[0] = n[0]/i;
+            n[1] = n[1]/i;
+        }
+        else{
+            for(i = positivos[1] ; i!=0 ; i--){
+                if(positivos[0] % i == 0 && positivos[1] % i == 0)
+                    break;
+            }
+            n[0] = n[0]/i;
+            n[1] = n[1]/i;
+        }
+        
+        return n;
     }
 }
