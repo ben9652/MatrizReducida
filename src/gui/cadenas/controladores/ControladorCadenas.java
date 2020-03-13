@@ -8,10 +8,12 @@ package gui.cadenas.controladores;
 import gui.cadenas.modelos.Palabra;
 import gui.cadenas.vistas.VentanaCadenas;
 import gui.interfaces.IControladorCadenas;
+import gui.interfaces.IControladorNumeros;
 import static gui.interfaces.IPalabra.EXITO_COMPLEJO;
+import gui.numeros.controladores.ControladorNumeros;
+import gui.numeros.modelos.Numero;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
@@ -41,10 +43,12 @@ public class ControladorCadenas implements IControladorCadenas {
         
         String resultado = expresion.esComplejo();
         
-        if(!resultado.equals(EXITO_COMPLEJO))
-            JOptionPane.showMessageDialog(null, "Número: " + expresion + "\n" + resultado, "Error", JOptionPane.ERROR_MESSAGE);
+        if(resultado.equals(EXITO_COMPLEJO)){
+            Numero numero = new Numero(expresion);
+            IControladorNumeros cN = new ControladorNumeros(this.ventana, numero);
+        }
         else
-            JOptionPane.showMessageDialog(null, "Número: " + expresion + "\n" + resultado, "Éxito", JOptionPane.INFORMATION_MESSAGE, new ImageIcon(VentanaCadenas.class.getResource("check.png")));
+            JOptionPane.showMessageDialog(null, "Número: " + expresion + "\n" + resultado, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class VentanaCadenas extends javax.swing.JDialog {
      * @param ventanaPadre
      */
     public VentanaCadenas(IControladorCadenas controlador, JDialog ventanaPadre) {
-        super(ventanaPadre, true);
+        super(ventanaPadre, false);
         initComponents();
         this.controlador = controlador;
     }

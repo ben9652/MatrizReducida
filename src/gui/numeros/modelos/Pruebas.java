@@ -14,12 +14,15 @@ import java.util.Scanner;
  */
 public class Pruebas {
     public static void main(String[] args) {
-        Long[] a = {Long.valueOf(213), Long.valueOf(-213)};
-        Long[] b = {Long.valueOf(225), Long.valueOf(3)};
-        
-        Long[] resultado = Numero.sdf(a, b);
-        System.out.println("(" + a[0] + "/" + a[1] + ") + (" + b[0] + "/" + b[1] + ") = (" + resultado[0] + "/" + resultado[1] + ")");
-        //No se debería validar 7/+8/7i ni 7/+4/+5/+6/+6/+7
+        //7-2/-5-1+i-i-2/-54i
+        Palabra expresion = new Palabra("2i");
+        if(expresion.esComplejo().equals(Palabra.EXITO_COMPLEJO)){
+            Numero numero = new Numero(expresion);
+            Long[][] numeros = numero.getNumero();
+            System.out.println("Parte real: " + Numero.verFraccion(numeros[0]) +
+                    "\nParte imaginaria: " + Numero.verFraccion(numeros[1]));
+        }
+        else System.out.println("No es un complejo.");
 //        Scanner scanner = new Scanner(System.in);
 //        String expresion;
 //        

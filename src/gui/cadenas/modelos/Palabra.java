@@ -18,9 +18,12 @@ import java.util.Objects;
 public final class Palabra implements IPalabra, Iterable<Caracter> {
     private Caracter primero;
     private Caracter ultimo;
-    private int cantidad;
+    private Integer cantidad = 0;
     private String palabra;
     private static final Fila FILA = new Fila();
+    
+    private List<Palabra> terminos_reales;
+    private List<Palabra> terminos_imaginarios;
 
     public Palabra(String palabra) {
         if(palabra != null) {
@@ -70,8 +73,27 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return palabra;
     }
     
+    public List<Palabra> verTerminosReales(){
+        return this.terminos_reales;
+    }
+    
+    private void agregarTerminosReales(){
+        this.terminos_reales = new ArrayList<>();
+        this.terminos_reales = this.recogerTerminos(false);
+    }
+    
+    public List<Palabra> verTerminosImaginarios(){
+        return this.terminos_imaginarios;
+    }
+    
+    private void agregarTerminosImaginarios(){
+        this.terminos_imaginarios = new ArrayList<>();
+        this.terminos_imaginarios = this.recogerTerminos(true);
+    }
+    
     @Override
     public void setPalabraDesdeCaracter(Caracter car){
+        if(car == null) return;
         for( ; car.getCaracter() != null ; car = car.getSiguiente())
             this.insertarCaracterFinal(new Caracter(car.getCaracter()));
     }
@@ -79,7 +101,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
     public void mostrarPalabra(){
         Caracter aux=this.primero;
         if(aux!=null){
-            for(;aux!=null;aux=aux.getSiguiente())
+            for(;aux.getCaracter()!=null;aux=aux.getSiguiente())
                 System.out.print(aux.getCaracter());
         }
         System.out.println("");
@@ -125,6 +147,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             this.palabra += car.getCaracter().toString();
             this.cantidad++;
         }
+        car.setIndice(this.cantidad-1);
     }
     
     @Override
@@ -149,7 +172,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
     }
     
     @Override
-    public Integer ocurrencias(Caracter caracter){
+    public Integer ocurrencias(Character caracter){
         Integer ocurrencias = 0;
         Caracter actual = this.primero;
         for(int i = 0 ; i<this.length() ; i++, actual = actual.getSiguiente())
@@ -171,6 +194,9 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 case 0:
                     this.primero = this.primero.getSiguiente();
                     this.palabra = this.palabra.substring(1);
+                    this.cantidad--;
+                    for(Caracter c : this)
+                        c.setIndice(c.getIndice()-1);
                     break;
                     
                 default:
@@ -192,15 +218,52 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                         String subCadenaFinal = this.palabra.substring(posicion + 1, this.palabra.length());
                         
                         this.palabra = subCadenaInicial + subCadenaFinal;
+                        
+                        this.cantidad--;
+                        
+                        for(Caracter car = this.getCar(posicion) ; car.getCaracter() != null ; car = car.getSiguiente())
+                            car.setIndice(car.getIndice()-1);
                     }
                     break;
             }
-            this.cantidad--;
+        }
+    }
+    
+    public void reemplazarCaracter(Integer posicion, Character caracter){
+        Caracter c = this.primero;
+        
+        if(posicion<0 || posicion>=this.cantidad) return;
+        
+        if(posicion == 0){
+            String segunda_parte = this.palabra.substring(1);
+            this.palabra = caracter.toString() + segunda_parte;
+        }
+        
+        if(posicion == this.cantidad-1){
+            String primera_parte = this.palabra.substring(0, posicion);
+            this.palabra = primera_parte + caracter.toString();
+        }
+        
+        for(Integer i = 0 ; true ; c = c.getSiguiente(), i++){
+            if(Objects.equals(i, posicion)){
+                c.setCaracter(caracter);
+                String primera_parte = this.palabra.substring(0, posicion);
+                String segunda_parte = this.palabra.substring(posicion + 1);
+                this.palabra = primera_parte + caracter.toString() + segunda_parte;
+                break;
+            }
+        }
+    }
+    
+    public void borrarOcurrencias(Character ocurrencia){
+        for(Caracter c : this){
+            if(c.equals(ocurrencia))
+                this.borrarCaracter(c.getIndice());
         }
     }
     
     @Override
-    public int length(){
+    public Integer length(){
         return cantidad;
     }
     
@@ -241,6 +304,30 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return nueva;
     }
     
+    /**
+     * <pre>
+     * Controla si una cadena de texto tiene el formato de un número real o complejo.
+     * 
+     * La cadena tendrá un formato válido si se cumplen todas las siguientes condiciones:
+     *  1) La cadena no debe estar vacía
+     *  2) No debe haber más de 1 signo '+' o '-' seguido.
+     *  3) Luego de un signo '+' o '-' debe haber otro número.
+     * 
+     *  Nota para la siguiente condición: 
+     *      Este método elimina los espacios que haya entre términos y signos para facilitar el control.
+     * 
+     *  4) No se puede escribir un término con espaciados en el medio.
+     *  5) Un término es válido solo si cumple las siguientes condiciones:
+     *      I) No puede haber más de uno de los siguientes caracteres: '+', '-', '/', y 'i'.
+     *      II) No puede haber un slash sin números a la derecha o a la izquierda.
+     *      III) No puede haber un signo detrás de un slash.
+     *      IV) No se permiten caracteres que no sean los numéricos o los caracteres '+', '-', '/', y 'i'.
+     *      V) La unidad imaginaria solo puede estar posicionada detrás, o delante, de un término. No puede estar entre números.
+     * 
+     * También, al final, ya validado todo, se guardan los términos reales y los imaginarios de este objeto Palabra.
+     * </pre>
+     * @return Un mensaje que indica el resultado del control.
+     */
     public String esComplejo(){
         if(this.getPalabra().isEmpty()) return ERROR_SIN_EXPRESION;
         
@@ -269,10 +356,15 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             if(!estado.equals(EXITO_TERMINO)) return estado;
         }
         
+        this.palabra = desespaciada.palabra;
+        
+        this.agregarTerminosReales();
+        this.agregarTerminosImaginarios();
+        
         return EXITO_COMPLEJO;
     }
     
-    public Palabra[] separarPorSignos(){
+    private Palabra[] separarPorSignos(){
         List<Palabra> listaTerminos = new ArrayList<>();
         Palabra terminoCandidato = new Palabra();
         for(Caracter c : this){
@@ -298,15 +390,151 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         return terminos;
     }
     
+    private List<Palabra> recogerTerminos(boolean imaginarios){
+        List<Palabra> terminos = new ArrayList<>();
+        
+        Palabra auxiliar = new Palabra(this.palabra);
+        
+        if(auxiliar.primero == null) return terminos;
+        
+        if(imaginarios){
+            auxiliar.eliminarTerminos(false);
+            if(auxiliar.primero.getCaracter() == null) return terminos;
+            for(Caracter c = auxiliar.primero ; c.getCaracter() != null ; c = c.getSiguiente()){
+                if(c.equals(UNIDAD_IMAGINARIA)){
+                    if(!imaginariaSola(c))
+                        auxiliar.borrarCaracter(c.getIndice());
+                    else
+                        auxiliar.reemplazarCaracter(c.getIndice(), '1');
+                }
+            }
+        }
+        else
+            auxiliar.eliminarTerminos(true);
+        if(auxiliar.primero.getCaracter() == null) return terminos;
+        if(auxiliar.primero.equals('+'))
+            auxiliar.borrarCaracter(0);
+        Palabra termino = new Palabra();
+        for(Caracter c : auxiliar){
+            if(mas_o_menos(c) && !c.getAnterior().equals('/') && !terminos.isEmpty()){
+                if(c.equals('-') && i_o_numero(c.getSiguiente())){
+                    terminos.add(new Palabra(termino.getPalabra()));
+                    termino.vaciar();
+                    termino.insertarCaracterFinal(c);
+                }
+                else{
+                    terminos.add(new Palabra(termino.getPalabra()));
+                    termino.vaciar();
+                }
+            }
+            else{
+                if(c.getSiguiente().getCaracter() == null){
+                    termino.insertarCaracterFinal(c);
+                    terminos.add(new Palabra(termino.getPalabra()));
+                    break;
+                }
+                else
+                    termino.insertarCaracterFinal(c);
+            }
+        }
+        
+        return terminos;
+    }
+    
     /**
-     * Este método elimina los espacios que hay entre signos '+' y '-', y números o 'ies'.
+     * Se eliminan términos reales, o imaginarios.
+     * 
+     * @param imaginarios Se indica qué hacer. Con <i><b>true</b></i> se ordena eliminar los términos imaginarios; con <i><b>false</b></i>, los reales.</pre>
+     */
+    private void eliminarTerminos(boolean imaginarios){
+        if(imaginarios == false){
+            Palabra con_imaginarios = this.recogerImaginarios();
+            this.vaciar();
+            if(con_imaginarios.primero == null)
+                this.palabra = "";
+            else
+                this.setPalabraDesdeCaracter(con_imaginarios.primero);
+        }
+        else{
+            for(Caracter c = this.primero ; c.getCaracter() != null ; c = c.getSiguiente()){
+                if(c.equals(UNIDAD_IMAGINARIA)){
+                    Caracter auxiliar;
+                    //Si la unidad imaginaria está al final del término
+                    if(c.getAnterior().isdigit() && (c.getSiguiente().getCaracter() == null || mas_o_menos(c.getSiguiente()))){
+                        for(auxiliar = c ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; auxiliar = auxiliar.getAnterior())
+                            this.borrarCaracter(auxiliar.getIndice());
+                        if(mas_o_menos(auxiliar))
+                            this.borrarCaracter(auxiliar.getIndice());
+                    }
+                    //Si la unidad imaginaria está al comienzo del término
+                    if(c.getSiguiente().isdigit() && (c.getAnterior().getCaracter() == null || mas_o_menos(c.getAnterior()))){
+                        if(mas_o_menos(c.getAnterior()))
+                            this.borrarCaracter(c.getIndice()-1);
+                        for(auxiliar = c ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; ){
+                            this.borrarCaracter(auxiliar.getIndice());
+                            auxiliar = auxiliar.getSiguiente();
+                        }
+                    }
+                    if(imaginariaSola(c)){
+                        if(mas_o_menos(c.getAnterior())) auxiliar = c.getAnterior();
+                        else auxiliar = c;
+                        this.borrarCaracter(auxiliar.getIndice());
+                    }
+                }
+            }
+        }
+    }
+    
+    private Palabra recogerImaginarios(){
+        Palabra nueva = new Palabra();
+        for(Caracter c : this){
+            if(c.equals(UNIDAD_IMAGINARIA)){
+                Caracter auxiliar;
+                //Si la unidad imaginaria está al final del término
+                if(c.getAnterior().isdigit() && (c.getSiguiente().getCaracter() == null || mas_o_menos(c.getSiguiente()))){
+                    for(auxiliar = c ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; auxiliar = auxiliar.getAnterior()){
+                        if(auxiliar.getAnterior().getCaracter() == null) break;
+                    }
+                    nueva.insertarCaracterFinal(new Caracter(auxiliar.getCaracter()));
+                    auxiliar = auxiliar.getSiguiente();
+                    for( ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; auxiliar = auxiliar.getSiguiente())
+                        nueva.insertarCaracterFinal(new Caracter(auxiliar.getCaracter()));
+                }
+                //Si la unidad imaginaria está al comienzo del término
+                if(c.getSiguiente().isdigit() && (c.getAnterior().getCaracter() == null || mas_o_menos(c.getAnterior()))){
+                    if(mas_o_menos(c.getAnterior()))
+                        nueva.insertarCaracterFinal(new Caracter(c.getAnterior().getCaracter()));
+                    for(auxiliar = c ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; auxiliar = auxiliar.getSiguiente())
+                        nueva.insertarCaracterFinal(new Caracter(auxiliar.getCaracter()));
+                }
+                //Si la unidad imaginaria está sola
+                if(imaginariaSola(c)){
+                    if(c.getAnterior().equals('-'))
+                        nueva.insertarCaracterFinal(new Caracter(c.getAnterior().getCaracter()));
+                    nueva.insertarCaracterFinal(new Caracter(UNIDAD_IMAGINARIA));
+                }
+            }
+        }
+        return nueva;
+    }
+    
+    private static boolean imaginariaSola(Caracter unidad_imaginaria){
+        return
+                unidad_imaginaria.getAnterior().getCaracter() == null && mas_o_menos(unidad_imaginaria.getSiguiente())
+             || mas_o_menos(unidad_imaginaria.getAnterior()) && mas_o_menos(unidad_imaginaria.getSiguiente())
+             || mas_o_menos(unidad_imaginaria.getAnterior()) && unidad_imaginaria.getSiguiente().getCaracter() == null
+             || unidad_imaginaria.getAnterior().getCaracter() == null && unidad_imaginaria.getSiguiente().getCaracter() == null;
+    }
+    
+    /**
+     * <pre>Este método elimina los espacios que hay entre signos '+' y '-', y números o 'ies'.
      * 
      * Por ejemplo:
      *              Palabra palabra = new Palabra("+ 6 /  - 9i  -    7");
      * 
      *              palabra.desespaciado_numerosComplejos() returns "+6 / - 9i-7"
-     *
-     * @return
+     *</pre>
+     * @return Palabra desespaciada entre números o ies, y '+' y '-'.
      */
     private Palabra desespaciado_numerosComplejos() {
         Palabra palabraDesespaciada = new Palabra(this.palabra);
@@ -335,7 +563,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 
                 Palabra numero_indice = new Palabra();
                 numero_indice.setPalabraDesdeCaracter(arreglo[1]);
-                i = Caracter.atoi(numero_indice.getPalabra());
+                i = Caracter.atoi(numero_indice.getPalabra()).intValue();
                 
                 for( ; indice.equals(' ') ; indice = indice.getSiguiente()){
                     palabraDesespaciada.borrarCaracter(i);

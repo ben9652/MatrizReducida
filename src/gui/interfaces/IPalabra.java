@@ -13,7 +13,7 @@ import gui.cadenas.modelos.Palabra;
  * @author Benjamin
  */
 public interface IPalabra {
-    Character UNIDAD_IMAGINARIA = 'j';
+    Character UNIDAD_IMAGINARIA = 'i';
     
     String EXITO_COMPLEJO = "Es un número válido.";
     String ERROR_SIN_EXPRESION = "No hay una expresión que analizar.";
@@ -46,11 +46,11 @@ public interface IPalabra {
 
     public Caracter getCar(int posicion);
 
-    public Integer ocurrencias(Caracter caracter);
+    public Integer ocurrencias(Character caracter);
 
     public void borrarCaracter(Integer posicion);
 
-    public int length();
+    public Integer length();
 
     public void esPalindromo(Palabra palabra);
 

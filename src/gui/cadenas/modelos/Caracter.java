@@ -19,7 +19,8 @@ public class Caracter {
     private Integer indice;
 
     public Caracter(Character caracter) {
-        this.caracter = caracter;
+        if(caracter == null) this.caracter = '\u0000';
+        else this.caracter = caracter;
         this.siguiente = null;
         this.anterior = null;
     }
@@ -33,6 +34,7 @@ public class Caracter {
     }
     
     public Integer getIndice(){
+        if(this == null) return -1;
         return this.indice;
     }
     
@@ -82,14 +84,14 @@ public class Caracter {
         return cadenas.contains(aux);
     }
     
-    public static Integer atoi(String c){
-        if(c == null || c.isEmpty()) return 0;
+    public static Long atoi(String c){
+        if(c == null || c.isEmpty()) return Long.valueOf(0);
         int i = 0;
-        int numero = 0;
+        Long numero = Long.valueOf(0);
         Palabra expresion = new Palabra(c);
         Caracter actual;
         boolean esNegativo = false;
-        if(expresion.getCar(0).equals(new Caracter('-'))){
+        if(expresion.getCar(0).equals('-')){
             i = 1;
             esNegativo = true;
         }
@@ -99,7 +101,7 @@ public class Caracter {
                 if(!esNegativo) numero = numero + charToNum(actual)*Numero.potenciaNumero(10, potencia-1);
                 else numero = numero + charToNum(actual)*Numero.potenciaNumero(10, potencia-2);
             }
-            else return 0;
+            else return Long.valueOf(0);
         }
         if(!esNegativo) return numero;
         else return numero*(-1);
