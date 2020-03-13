@@ -98,8 +98,8 @@ public class Caracter {
         for(Integer potencia = expresion.length() ; i<expresion.length() ; i++, potencia--) {
             actual = expresion.getCar(i);
             if(actual.isdigit()){
-                if(!esNegativo) numero = numero + charToNum(actual)*Numero.potenciaNumero(10, potencia-1);
-                else numero = numero + charToNum(actual)*Numero.potenciaNumero(10, potencia-2);
+                if(!esNegativo) numero = numero + charToNum(actual)*Numero.potenciaNumero(Long.valueOf(10), potencia-1);
+                else numero = numero + charToNum(actual)*Numero.potenciaNumero(Long.valueOf(10), potencia-1);
             }
             else return Long.valueOf(0);
         }
@@ -107,18 +107,18 @@ public class Caracter {
         else return numero*(-1);
     }
     
-    private static Integer charToNum(Caracter c){
+    private static Long charToNum(Caracter c){
         switch(c.getCaracter()){
-            case '0': return 0;
-            case '1': return 1;
-            case '2': return 2;
-            case '3': return 3;
-            case '4': return 4;
-            case '5': return 5;
-            case '6': return 6;
-            case '7': return 7;
-            case '8': return 8;
-            case '9': return 9;
+            case '0': return Long.valueOf(0);
+            case '1': return Long.valueOf(1);
+            case '2': return Long.valueOf(2);
+            case '3': return Long.valueOf(3);
+            case '4': return Long.valueOf(4);
+            case '5': return Long.valueOf(5);
+            case '6': return Long.valueOf(6);
+            case '7': return Long.valueOf(7);
+            case '8': return Long.valueOf(8);
+            case '9': return Long.valueOf(9);
             default: return null;
         }
     }

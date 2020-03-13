@@ -88,8 +88,8 @@ public class Numero {
         return c;
     }
     
-    public static Integer potenciaNumero(Integer numero, Integer potencia){
-        if(potencia == 0)   return 1;
+    public static Long potenciaNumero(Long numero, Integer potencia){
+        if(potencia == 0)   return Long.valueOf(1);
         if(potencia == 1)   return numero;
         else                return numero * potenciaNumero(numero, potencia-1);
     }
