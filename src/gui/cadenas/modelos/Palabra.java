@@ -426,6 +426,10 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                         terminos.add(new Palabra(termino.getPalabra()));
                         termino.vaciar();
                     }
+                    if(!terminosVacia){
+                        terminos.add(new Palabra(termino.getPalabra()));
+                        termino.vaciar();
+                    }
                     if(c.equals('-'))
                         termino.insertarCaracterFinal(c);
                 }
@@ -517,6 +521,8 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                 //Si la unidad imaginaria está sola
                 if(imaginariaSola(c)){
                     if(c.getAnterior().equals('-'))
+                        nueva.insertarCaracterFinal(new Caracter(c.getAnterior().getCaracter()));
+                    if(c.getAnterior().equals('+') && c.getAnterior().getAnterior().getCaracter() != null)
                         nueva.insertarCaracterFinal(new Caracter(c.getAnterior().getCaracter()));
                     nueva.insertarCaracterFinal(new Caracter(UNIDAD_IMAGINARIA));
                 }
