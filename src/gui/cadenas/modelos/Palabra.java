@@ -479,17 +479,37 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                     }
                     //Si la unidad imaginaria está al comienzo del término
                     if(c.getSiguiente().isdigit() && (c.getAnterior().getCaracter() == null || mas_o_menos(c.getAnterior()))){
+                        boolean haySlash = false;
                         if(mas_o_menos(c.getAnterior()))
                             this.borrarCaracter(c.getIndice()-1);
-                        for(auxiliar = c ; !(mas_o_menos(auxiliar) && !auxiliar.getAnterior().equals('/')) && auxiliar.getCaracter() != null ; ){
-                            this.borrarCaracter(auxiliar.getIndice());
-                            auxiliar = auxiliar.getSiguiente();
+                        for(auxiliar = c ; !mas_o_menos(auxiliar) && auxiliar.getCaracter() != null ; ){
+                            if(auxiliar.equals('/')) {
+                                haySlash = true;
+                                this.borrarCaracter(auxiliar.getIndice());
+                                auxiliar = auxiliar.getSiguiente();
+                                break;
+                            }
+                            else {
+                                this.borrarCaracter(auxiliar.getIndice());
+                                auxiliar = auxiliar.getSiguiente();
+                            }
+                        }
+                        if(haySlash == true){
+                            if(mas_o_menos(auxiliar)){
+                                this.borrarCaracter(auxiliar.getIndice());
+                                auxiliar = auxiliar.getSiguiente();
+                            }
+                            for( ; !mas_o_menos(auxiliar) && auxiliar.getCaracter() != null ; auxiliar = auxiliar.getSiguiente())
+                                this.borrarCaracter(auxiliar.getIndice());
                         }
                     }
                     if(imaginariaSola(c)){
                         if(mas_o_menos(c.getAnterior())) auxiliar = c.getAnterior();
                         else auxiliar = c;
                         this.borrarCaracter(auxiliar.getIndice());
+                        auxiliar = auxiliar.getSiguiente();
+                        if(auxiliar.equals(UNIDAD_IMAGINARIA))
+                            this.borrarCaracter(auxiliar.getIndice());
                     }
                 }
             }

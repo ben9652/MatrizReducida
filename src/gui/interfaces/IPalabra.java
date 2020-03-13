@@ -13,7 +13,7 @@ import gui.cadenas.modelos.Palabra;
  * @author Benjamin
  */
 public interface IPalabra {
-    Character UNIDAD_IMAGINARIA = 'i';
+    Character UNIDAD_IMAGINARIA = 'j';
     
     String EXITO_COMPLEJO = "Es un número válido.";
     String ERROR_SIN_EXPRESION = "No hay una expresión que analizar.";
