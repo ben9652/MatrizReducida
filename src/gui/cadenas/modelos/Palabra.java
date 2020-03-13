@@ -204,6 +204,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
                         this.ultimo = this.ultimo.getAnterior();
                         this.ultimo.setSiguiente(null);
                         this.palabra = this.palabra.substring(0, posicion);
+                        this.cantidad--;
                     }
                     else{
                         for(int contador=0 ; contador != posicion ; contador++, aux = aux.getSiguiente());
@@ -399,7 +400,7 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         
         if(imaginarios){
             auxiliar.eliminarTerminos(false);
-            if(auxiliar.primero.getCaracter() == null) return terminos;
+            if(auxiliar.primero == null) return terminos;
             for(Caracter c = auxiliar.primero ; c.getCaracter() != null ; c = c.getSiguiente()){
                 if(c.equals(UNIDAD_IMAGINARIA)){
                     if(!imaginariaSola(c))
@@ -416,11 +417,17 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
             auxiliar.borrarCaracter(0);
         Palabra termino = new Palabra();
         for(Caracter c : auxiliar){
-            if(mas_o_menos(c) && !c.getAnterior().equals('/') && !terminos.isEmpty()){
-                if(c.equals('-') && i_o_numero(c.getSiguiente())){
-                    terminos.add(new Palabra(termino.getPalabra()));
-                    termino.vaciar();
-                    termino.insertarCaracterFinal(c);
+            boolean esUnSigno = mas_o_menos(c);
+            boolean elAnteriorNoEsUnSlash = !c.getAnterior().equals('/');
+            boolean terminosVacia = terminos.isEmpty();
+            if(esUnSigno && elAnteriorNoEsUnSlash){
+                if(i_o_numero(c.getSiguiente())){
+                    if(terminosVacia && !(c.getIndice().equals(0) && mas_o_menos(c))){
+                        terminos.add(new Palabra(termino.getPalabra()));
+                        termino.vaciar();
+                    }
+                    if(c.equals('-'))
+                        termino.insertarCaracterFinal(c);
                 }
                 else{
                     terminos.add(new Palabra(termino.getPalabra()));

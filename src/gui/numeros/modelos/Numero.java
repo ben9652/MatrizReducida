@@ -187,7 +187,7 @@ public class Numero {
                             cadena = cadena + "- " + verFraccion(auxiliar);
                         }
                         else
-                            cadena = cadena + verFraccion(auxiliar);
+                            cadena = cadena + verFraccion(n[c]);
                     }
                 }
             }
