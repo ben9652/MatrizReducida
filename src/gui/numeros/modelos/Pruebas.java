@@ -6,7 +6,6 @@
 package gui.numeros.modelos;
 
 import gui.cadenas.modelos.Palabra;
-import java.util.Scanner;
 
 /**
  *
@@ -19,8 +18,8 @@ public class Pruebas {
         if(expresion.esComplejo().equals(Palabra.EXITO_COMPLEJO)){
             Numero numero = new Numero(expresion);
             Long[][] numeros = numero.getNumero();
-            System.out.println("Parte real: " + Numero.verFraccion(numeros[0]) +
-                    "\nParte imaginaria: " + Numero.verFraccion(numeros[1]));
+            System.out.println("Parte real: " + Fraccion.verFraccion(numeros[0]) +
+                    "\nParte imaginaria: " + Fraccion.verFraccion(numeros[1]));
         }
         else System.out.println("No es un complejo.");
 //        Scanner scanner = new Scanner(System.in);
