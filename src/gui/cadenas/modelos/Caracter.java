@@ -88,6 +88,7 @@ public class Caracter {
         if(c == null || c.isEmpty()) return Long.valueOf(0);
         int i = 0;
         Long numero = Long.valueOf(0);
+        Integer potencia;
         Palabra expresion = new Palabra(c);
         Caracter actual;
         boolean esNegativo = false;
@@ -95,7 +96,11 @@ public class Caracter {
             i = 1;
             esNegativo = true;
         }
-        for(Integer potencia = expresion.length() ; i<expresion.length() ; i++, potencia--) {
+        if(esNegativo == true)
+            potencia = expresion.length()-1;
+        else
+            potencia = expresion.length();
+        for( ; i<expresion.length() ; i++, potencia--) {
             actual = expresion.getCar(i);
             if(actual.isdigit()){
                 if(!esNegativo) numero = numero + charToNum(actual)*Numero.potenciaNumero(Long.valueOf(10), potencia-1);

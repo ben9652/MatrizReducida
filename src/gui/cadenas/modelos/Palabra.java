@@ -392,15 +392,14 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
     }
     
     private List<Palabra> recogerTerminos(boolean imaginarios){
-        List<Palabra> terminos = new ArrayList<>();
         
         Palabra auxiliar = new Palabra(this.palabra);
         
-        if(auxiliar.primero == null) return terminos;
+        if(auxiliar.primero == null) return new ArrayList<>();
         
         if(imaginarios){
             auxiliar.eliminarTerminos(false);
-            if(auxiliar.primero == null) return terminos;
+            if(auxiliar.primero == null) return new ArrayList<>();
             for(Caracter c = auxiliar.primero ; c.getCaracter() != null ; c = c.getSiguiente()){
                 if(c.equals(UNIDAD_IMAGINARIA)){
                     if(!imaginariaSola(c))
@@ -412,11 +411,19 @@ public final class Palabra implements IPalabra, Iterable<Caracter> {
         }
         else
             auxiliar.eliminarTerminos(true);
-        if(auxiliar.primero.getCaracter() == null) return terminos;
+        if(auxiliar.primero.getCaracter() == null) return new ArrayList<>();
         if(auxiliar.primero.equals('+'))
             auxiliar.borrarCaracter(0);
+        
+        return agregadoTerminos(auxiliar);
+    }
+    
+    private static List<Palabra> agregadoTerminos(Palabra expresion){
+        List<Palabra> terminos = new ArrayList<>();
+        
         Palabra termino = new Palabra();
-        for(Caracter c : auxiliar){
+        
+        for(Caracter c : expresion){
             boolean esUnSigno = mas_o_menos(c);
             boolean elAnteriorNoEsUnSlash = !c.getAnterior().equals('/');
             boolean terminosVacia = terminos.isEmpty();

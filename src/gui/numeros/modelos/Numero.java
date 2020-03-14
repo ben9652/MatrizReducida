@@ -94,6 +94,12 @@ public class Numero {
         else                return numero * potenciaNumero(numero, potencia-1);
     }
     
+    /**
+     * 
+     * @param n1
+     * @param n2
+     * @return 
+     */
     public static Long[] sdf(Long n1[],Long n2[]){
         if(n1 == null || n2 == null){
             Long[] nulo = {Long.valueOf(0), Long.valueOf(0)};
