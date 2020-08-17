@@ -22,7 +22,7 @@ import javax.swing.JOptionPane;
  * @author Benjamin
  */
 public class ControladorCadenas implements IControladorCadenas {
-    private VentanaCadenas ventana;
+    private final VentanaCadenas ventana;
     
     public ControladorCadenas(JDialog ventanaPadre){
         this.ventana = new VentanaCadenas(this, ventanaPadre);

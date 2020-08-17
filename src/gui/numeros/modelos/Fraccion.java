@@ -84,8 +84,9 @@ public class Fraccion {
                 }
             }
             else{
-                this.setDenominador(this.verNumerador() * n.verDenominador());
+                Long denominador = this.verDenominador() * n.verDenominador();
                 this.setNumerador(n.verDenominador() * this.verNumerador() + this.verDenominador() * n.verNumerador());
+                this.setDenominador(denominador);
             }
 	}
         else{

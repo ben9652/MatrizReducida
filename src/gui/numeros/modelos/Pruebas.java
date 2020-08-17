@@ -5,7 +5,9 @@
  */
 package gui.numeros.modelos;
 
-import gui.cadenas.modelos.Palabra;
+import gui.matrices.modelos.Matriz;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -13,15 +15,34 @@ import gui.cadenas.modelos.Palabra;
  */
 public class Pruebas {
     public static void main(String[] args) {
-        //7-2/-5-1+i-i-2/-54i
-        Palabra expresion = new Palabra("2i");
-        if(expresion.esComplejo().equals(Palabra.EXITO_COMPLEJO)){
-            Numero numero = new Numero(expresion);
-            Long[][] numeros = numero.getNumero();
-            System.out.println("Parte real: " + Fraccion.verFraccion(numeros[0]) +
-                    "\nParte imaginaria: " + Fraccion.verFraccion(numeros[1]));
-        }
-        else System.out.println("No es un complejo.");
+        Matriz<Integer> matriz = new Matriz();
+        Integer a = 9;
+        Integer b = 5;
+        Integer c = 1;
+        Integer d = 0;
+        Integer e = 7;
+        Integer f = 8;
+        Integer g = 4;
+        Integer h = 2;
+        Integer i = 6;
+        
+        List<Integer> fila1 = new ArrayList<>();
+        fila1.add(a);
+        fila1.add(b);
+        fila1.add(c);
+        List<Integer> fila2 = new ArrayList<>();
+        fila2.add(d);
+        fila2.add(e);
+        fila2.add(f);
+        List<Integer> fila3 = new ArrayList<>();
+        fila3.add(g);
+        fila3.add(h);
+        fila3.add(i);
+        
+        matriz.addRow(fila1);
+        matriz.addRow(fila2);
+        matriz.addRow(fila3);
+        
 //        Scanner scanner = new Scanner(System.in);
 //        String expresion;
 //        

@@ -1,0 +1,7 @@
+Algoritmo de Gauss-Jordan:
+1) Multiplicar la primera fila por el inverso del primer elemento de la misma. Es decir, hacer (1/a11)f1
+2) Hago la operación fi+(-ai1)f1, es decir, sumarle a todas las filas la primera fila multiplicada por el primer elemento de cada fila multiplicado por -1
+3) Repetir para las próximas filas el paso 1), y repetir el paso 2) para las columnas siguientes.
+
+FUNCION gauss_jordan()
+	

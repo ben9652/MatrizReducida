@@ -23,8 +23,8 @@ public class Numero {
     */
     private Long[][] numero = new Long[2][2];
     
-    private List<Fraccion> terminos_reales = new ArrayList<>();
-    private List<Fraccion> terminos_imaginarios = new ArrayList<>();
+    private final List<Fraccion> terminos_reales = new ArrayList<>();
+    private final List<Fraccion> terminos_imaginarios = new ArrayList<>();
 
     public Numero(Palabra cadena) {
         this.cadena = cadena;
@@ -66,11 +66,53 @@ public class Numero {
             
             if(p.ocurrencias('/') > 0){
                 String[] num = p.getPalabra().split("/");
-                candidato.setNumerador(Caracter.atoi(num[0]));
-                candidato.setDenominador(Caracter.atoi(num[1]));
+                
+                if(!num[0].contains("*"))
+                    candidato.setNumerador(Caracter.atoi(num[0]));
+                else {
+                    String[] factores = num[0].split("\\*");
+
+                    List<Long> factores_numericos = new ArrayList<>();
+
+                    for(String factor : factores)
+                        factores_numericos.add(Caracter.atoi(factor));
+
+                    Long numerador = Long.valueOf(1);
+                    for(Long factor_numerico : factores_numericos)
+                        numerador *= factor_numerico;
+
+                    candidato.setNumerador(numerador);
+                }
+                
+                if(!num[1].contains("*"))
+                    candidato.setDenominador(Caracter.atoi(num[1]));
+                else {
+                    String[] factores = num[1].split("\\*");
+
+                    List<Long> factores_numericos = new ArrayList<>();
+
+                    for(String factor : factores)
+                        factores_numericos.add(Caracter.atoi(factor));
+
+                    Long producto_al_numerador = Long.valueOf(1);
+                    candidato.setDenominador(factores_numericos.get(0));
+                    for(int i = 1 ; i < factores_numericos.size() ; i++)
+                        producto_al_numerador *= factores_numericos.get(i);
+
+                    candidato.setNumerador(candidato.getNumero()[0] * producto_al_numerador);
+                }
             }
-            else
-                candidato.setNumerador(Caracter.atoi(p.getPalabra()));
+            else {
+                if(p.ocurrencias('*') > 0) {
+                    String[] factores = p.getPalabra().split("\\*");
+                    Long numerador = Long.valueOf(1);
+                    for(String factor : factores)
+                        numerador *= Caracter.atoi(factor);
+                    candidato.setNumerador(numerador);
+                }
+                else
+                    candidato.setNumerador(Caracter.atoi(p.getPalabra()));
+            }
             
             if(imaginarios == false)
                 this.terminos_reales.add(candidato);
